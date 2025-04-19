@@ -58,6 +58,16 @@ def unpack_file(input_file, output_dir):
             input_file, os.path.join(output_dir, os.path.basename(input_file))
         )
 
+def process(input_path: str, out_dir: str, depth: int = 5):
+    if os.path.isfile(out_dir):
+        raise Exception(out_dir + " should be a directory")
+
+    if os.path.isfile(input_path):
+        unpack_file(input_path, out_dir)
+    elif os.path.isdir(input_path):
+        unpack_dir(input_path, out_dir, depth)
+    else:
+        raise Exception(input_path + " does not exist")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -104,15 +114,5 @@ if __name__ == "__main__":
     parser.add_argument("output", help="output directory")
 
     args = parser.parse_args()
-    input = args.input
-    output = args.output
 
-    if os.path.isfile(output):
-        raise Exception(output + " should be a directory")
-
-    if os.path.isfile(input):
-        unpack_file(input, output)
-    elif os.path.isdir(input):
-        unpack_dir(input, output, args.depth)
-    else:
-        raise Exception(input + " does not exist")
+    process(args.input, args.output, args.depth)

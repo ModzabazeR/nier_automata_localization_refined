@@ -6,12 +6,56 @@ import format.mcd as mcd
 from PIL import Image
 import os
 
-
 def ensure_dir(output_dir):
     if os.path.isfile(output_dir):
         raise Exception("Unable to extract to " + output_dir + ": not a directory")
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
+
+def get_parsed_ftb(ftb_path: str, texture_paths: list) -> ftb.File:
+    parsed = ftb.File.parse(open(ftb_path, "rb"))
+    if len(texture_paths) != parsed.header.textures_count:
+        raise Exception(
+            f"Invalid number of image files: was {len(texture_paths)}, expected {parsed.header.textures_count}"
+        )
+    return parsed
+
+def get_parsed_mcd(mcd_path: str, texture_paths: list) -> mcd.File:
+    parsed = mcd.File.parse(open(mcd_path, "rb"))
+
+    if len(texture_paths) != 1:
+        raise Exception(
+            f"Invalid number of image files: was {len(texture_paths)}, expected 1"
+        )
+
+    return parsed
+
+def process(font_file_path: str, texture_paths: list, font_id: int, out_dir: str, skip_cjk: bool = False, achar: int = None):
+    parsed = None
+    ext = os.path.splitext(font_file_path)[1]
+    if ext == ".ftb":
+        parsed = get_parsed_ftb(font_file_path, texture_paths)
+    elif ext == ".mcd":
+        parsed = get_parsed_mcd(font_file_path, texture_paths)
+    else:
+        raise Exception("Unknown file type for: " + font_file_path)
+
+    textures = []
+    for texture_file in texture_paths:
+        textures.append(Image.open(texture_file))
+
+    ensure_dir(out_dir)
+
+    for char, glyph in parsed.get_glyphs(textures, font_id).items():
+        if achar and achar != ord(char):
+            continue
+        if skip_cjk and (
+            (ord(char) >= 0x2E80 and ord(char) <= 0x9FFF)
+            or (ord(char) >= 0xAC00 and ord(char) <= 0xD7FF)
+        ):
+            continue
+        outfile = os.path.join(out_dir, f"{ord(char):04x}.png")
+        glyph.save(outfile)
 
 
 if __name__ == "__main__":
@@ -33,40 +77,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    parsed = None
-    ext = os.path.splitext(args.font_file)[1]
-    if ext == ".ftb":
-        parsed = ftb.File.parse(open(args.font_file, "rb"))
-        if len(args.image_files) != parsed.header.textures_count:
-            raise Exception(
-                "Invalid number of image files: was {0}, expected {1}".format(
-                    len(args.image_files), parsed.header.textures_count
-                )
-            )
-    elif ext == ".mcd":
-        parsed = mcd.File.parse(open(args.font_file, "rb"))
-        if len(args.image_files) != 1:
-            raise Exception(
-                "Invalid number of image files: was {0}, expected 1".format(
-                    len(args.image_files)
-                )
-            )
-    else:
-        raise Exception("Unknown file type for: " + args.font_file)
-
-    textures = []
-    for img_file in args.image_files:
-        textures.append(Image.open(img_file))
-
-    ensure_dir(args.directory)
-
-    for char, glyph in parsed.get_glyphs(textures, args.font_id).items():
-        if args.char and args.char != ord(char):
-            continue
-        if args.skip_cjk and (
-            (ord(char) >= 0x2E80 and ord(char) <= 0x9FFF)
-            or (ord(char) >= 0xAC00 and ord(char) <= 0xD7FF)
-        ):
-            continue
-        outfile = os.path.join(args.directory, "{0:04x}.png".format(ord(char)))
-        glyph.save(outfile)
+    process(args.font_file, args.image_files, args.font_id, args.directory, args.skip_cjk, args.char)
