@@ -64,6 +64,23 @@ def unpack_dats():
     unpkdat.process("data", "unpacked")
 
 def extract_ftb_fonts():
+    """
+    Extracts font data from .ftb files and their associated textures.
+    
+    This function processes a predefined set of font files (00, 01, 04, 05, 11)
+    from the unpacked game data. For each font:
+    - Locates the .ftb file in the unpacked/font directory
+    - Finds all associated texture files (.dds)
+    - Creates an output directory under fonts/
+    - Processes the font data using unpkfnt.process()
+    
+    The function skips CJK (Chinese, Japanese, Korean) characters during extraction.
+    
+    File structure:
+    - Input ftb: unpacked/font/font_XX.dat/font_XX.ftb
+    - Input textures: unpacked/font/font_XX.dtt/font_XX.wtp_*.dds
+    - Output: fonts/XX/
+    """
     console.print("Extracting fonts from ftb files")
     for font in ["00", "01", "04", "05", "11"]:
         ftb = f"unpacked/font/font_{font}.dat/font_{font}.ftb"
@@ -72,6 +89,22 @@ def extract_ftb_fonts():
         unpkfnt.process(ftb, textures, int(font), out_dir, skip_cjk=True)
 
 def extract_mcd_font(mcd_file: str, font_id: str, skip_cjk: bool = True):
+    """
+    Extracts font data from an MCD file and its associated texture.
+
+    This function processes a single font file by:
+    1. Converting the input .mcd path to find the associated texture file
+    2. Creating an output directory under fonts/
+    3. Processing the font data using unpkfnt.process()
+
+    Args:
+        mcd_file (str): Path to the .mcd file containing font data
+        font_id (str): ID of the font to extract (used for output directory)
+        skip_cjk (bool, optional): Whether to skip CJK characters. Defaults to True.
+
+    Example:
+        extract_mcd_font("unpacked/ui/ui_title_us.dat/messtitle.mcd", "02")
+    """
     console.print(f"Extracting font {font_id} from {mcd_file}")
     # Convert .dat to .dtt and .mcd to .wtp_000.dds in the texture path
     texture = mcd_file.replace('.dat', '.dtt').replace('.mcd', '.wtp_000.dds')
@@ -798,6 +831,6 @@ if __name__ == "__main__":
     extract_fonts()
 
     console.heading("Extracting strings...")
-    extract_strings("jp")
+    extract_strings("en") # can be changed to jp, en, fr, it, de, es
 
     console.heading("Done!")
