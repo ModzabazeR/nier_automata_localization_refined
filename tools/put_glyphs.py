@@ -11,6 +11,19 @@ def add_glyphs(font, texture, page, chars):
         font.add_character(char, page, glyph.width, glyph.height, x, y)
         texture.paste(glyph, (x, y))
 
+def process(input_ftb: str, input_texture: str, output_ftb: str, output_texture: str, page: int, char: list):
+    font = None
+    with open(input_ftb, "rb") as f:
+        font = ftb.File.parse(f)
+    texture = Image.open(input_texture)
+
+    chars = [(chr(int(c)), Image.open(tex)) for c, tex in char]
+
+    add_glyphs(font, texture, page, chars)
+
+    with open(output_ftb, "wb") as f:
+        f.write(font.serialize())
+    texture.save(output_texture)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -33,16 +46,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    font = None
-    with open(args.input_ftb, "rb") as input_ftb:
-        font = ftb.File.parse(input_ftb)
-    texture = Image.open(args.input_texture)
-
-    chars = [(chr(int(c)), Image.open(tex)) for c, tex in args.char]
-
-    add_glyphs(font, texture, args.page, chars)
-
-    with open(args.output_ftb, "wb") as out_ftb:
-        out_ftb.write(font.serialize())
-    texture.save(args.output_texture)
+    process(args.input_ftb, args.input_texture, args.output_ftb, args.output_texture, args.page, args.char)

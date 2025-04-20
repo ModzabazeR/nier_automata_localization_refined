@@ -9,6 +9,7 @@ class Header:
         result = Header()
         result.magic = read_bytes(reader, 118)
         assert_magic(result.magic, b"FTB ")
+
         result.textures_count = read_int(reader, 2)
         result.unknown = read_bytes(reader, 2)
         result.chars_count = read_int(reader, 2)
@@ -72,17 +73,23 @@ class File:
         relevant_glyphs = [c for c in self.chars if c.texture_id == page]
         w = glyph_size[0]
         h = glyph_size[1]
+        # print([f"{c.char}, {c.u}, {c.v}, {c.width}, {c.height}" for c in relevant_glyphs])
 
         glyph_x = 0
         glyph_y = texture_size[1]
         for x in range(0, texture_size[0] - w - 1, 32):
-            y = max(
-                [
-                    c.v + c.height
-                    for c in relevant_glyphs
-                    if x < c.u + c.width and x + w > c.u
-                ]
-            )
+            y = 0
+            if len(relevant_glyphs) != 0:
+                try:
+                    y = max(
+                        [
+                            c.v + c.height
+                            for c in relevant_glyphs
+                            if x < c.u + c.width and x + w > c.u
+                        ]
+                    )
+                except ValueError:
+                    y = 0
             if y < glyph_y:
                 glyph_x = x
                 glyph_y = y

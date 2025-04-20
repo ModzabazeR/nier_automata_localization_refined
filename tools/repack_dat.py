@@ -4,21 +4,23 @@ import argparse
 import os
 import format.dat as dat
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_file", help=".dat or .dtt file name")
-parser.add_argument("output_file", help="output .dat or .dtt file name")
-parser.add_argument("replacement_files", help="files to replace in ", nargs="+")
+def process(input_file: str, output_file: str, replacement_files: list):
+    file = open(input_file, "rb")
+    parsed = dat.File.parse(file)
 
+    for f in parsed.files:
+        for replacement_file in replacement_files:
+            if os.path.basename(replacement_file) == f.name:
+                f.bytes = open(replacement_file, "rb").read()
 
-args = parser.parse_args()
+    out_file = open(output_file, "wb")
+    out_file.write(parsed.serialize())
 
-file = open(args.input_file, "rb")
-dat = dat.File.parse(file)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", help=".dat or .dtt file name")
+    parser.add_argument("output_file", help="output .dat or .dtt file name")
+    parser.add_argument("replacement_files", help="files to replace in ", nargs="+")
 
-for f in dat.files:
-    for replacement_file in args.replacement_files:
-        if os.path.basename(replacement_file) == f.name:
-            f.bytes = open(replacement_file, "rb").read()
-
-out_file = open(args.output_file, "wb")
-out_file.write(dat.serialize())
+    args = parser.parse_args()
+    process(args.input_file, args.output_file, args.replacement_files)

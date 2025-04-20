@@ -31,13 +31,24 @@ def repack_wtp(parsed_wta, in_wtp, out_wtp, textures):
             out_wtp.write(texture)
             out_wtp.write(write_padding(out_wtp.tell(), 0x1000))
 
+def process(input_wta: str, input_wtp: str, output_wta: str, output_wtp: str, texture: list):
+    textures = {int(id): filename for id, filename in texture}
+
+    wta_file = open(input_wta, "rb")
+    in_wtp = open(input_wtp, "rb")
+    parsed_wta = wta.File.parse(wta_file)
+
+    out_wtp = open(output_wtp, "wb")
+    repack_wtp(parsed_wta, in_wtp, out_wtp, textures)
+    open(output_wta, "wb").write(parsed_wta.serialize())
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_wta", help="source wta file")
     parser.add_argument("input_wtp", help="source wtp file")
-    parser.add_argument("output_wta", help="source wta file")
-    parser.add_argument("output_wtp", help="source wtp file")
+    parser.add_argument("output_wta", help="target wta file")
+    parser.add_argument("output_wtp", help="target wtp file")
     parser.add_argument(
         "--texture",
         help="texture id and texture image (must be .dds)",
@@ -48,12 +59,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    textures = {int(id): filename for id, filename in args.texture}
-
-    wta_file = open(args.input_wta, "rb")
-    in_wtp = open(args.input_wtp, "rb")
-    parsed_wta = wta.File.parse(wta_file)
-
-    out_wtp = open(args.output_wtp, "wb")
-    repack_wtp(parsed_wta, in_wtp, out_wtp, textures)
-    open(args.output_wta, "wb").write(parsed_wta.serialize())
+    process(args.input_wta, args.input_wtp, args.output_wta, args.output_wtp, args.texture)

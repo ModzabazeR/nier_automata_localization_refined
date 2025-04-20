@@ -1,4 +1,3 @@
-from rich.console import Console
 from time import sleep
 import platform
 import glob
@@ -6,6 +5,7 @@ import subprocess
 import sys
 import os
 import shutil
+from config import MyConsole, langFormats
 
 # Add the tools directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'tools'))
@@ -13,39 +13,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'tools'))
 import tools.unpack_font as unpkfnt
 import tools.unpack_dat as unpkdat
 import tools.get_strings as getstr
-
-langFormats = {
-    "jp": {
-        "default": "",
-        "novel": ""
-    },
-    "en": {
-        "default": "_us",
-        "novel": "_eng"
-    },
-    "fr": {
-        "default": "_fr",
-        "novel": "_fra"
-    },
-    "it": {
-        "default": "_it",
-        "novel": "_ita"
-    },
-    "de": {
-        "default": "_de",
-        "novel": "_ger"
-    },
-    "es": {
-        "default": "_es",
-        "novel": "_esp"
-    },
-}
-
-class MyConsole(Console):
-    HEADING_STYLE = "bold white on blue"
-
-    def heading(self, text: str):
-        super().rule(f"[{self.HEADING_STYLE}]{text}", style=self.HEADING_STYLE)
 
 console = MyConsole()
 
