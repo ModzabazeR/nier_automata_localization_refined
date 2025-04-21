@@ -5,7 +5,7 @@ import subprocess
 import sys
 import os
 import shutil
-from config import MyConsole, langFormats
+from config import MyConsole, langFormats, srcLang, targetLang
 
 # Add the tools directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'tools'))
@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'tools'))
 import tools.unpack_font as unpkfnt
 import tools.unpack_dat as unpkdat
 import tools.get_strings as getstr
+import tools.utils as utils
 
 console = MyConsole()
 
@@ -155,10 +156,10 @@ def extract_strings(lang: str = "en"):
     if lang not in {"jp", "en", "fr", "it", "de", "es"}:
         raise Exception("Language " + lang + " is not supported")
 
-    unpkfnt.ensure_dir("source")
+    utils.ensure_dir("source")
 
     if lang == "jp":
-        unpkfnt.ensure_dir("jp")
+        utils.ensure_dir("jp")
 
     extract_strings_to_file(f"core/corehap.dat/core_hap.pak", f"core_hap.properties")
     extract_strings_to_file(f"ui/ui_loading.dat/messloading.mcd", f"messloading.properties")
@@ -789,6 +790,17 @@ def extract_strings(lang: str = "en"):
     extract_strings_to_file(f"novel/M5095_S0200_N{langFormats[lang]["novel"]}.txt", f"M5095_S0200_N{langFormats[lang]["novel"]}.txt")
     extract_strings_to_file(f"novel/M5095_S0300_N{langFormats[lang]["novel"]}.txt", f"M5095_S0300_N{langFormats[lang]["novel"]}.txt")
 
+    # TODO: use csv instead of properties since we don't need OmegaT
+    console.print("Copying files to target directory...")
+    utils.ensure_dir(f"target/")
+    source_files = os.listdir(f"source/")
+    # *.properties => *_{targetLang}.properties
+    for file in source_files:
+        if file.endswith(".properties"):
+            shutil.copy(f"source/{file}", f"target/{file.replace('.properties', f'_{targetLang}.properties')}")
+        elif file.endswith(".txt"):
+            shutil.copy(f"source/{file}", f"target/{file}")
+
 if __name__ == "__main__":
     console.heading("NieR:Automata Localization: Initialize")
     unpack_dats()
@@ -798,6 +810,6 @@ if __name__ == "__main__":
     extract_fonts()
 
     console.heading("Extracting strings...")
-    extract_strings("en") # can be changed to jp, en, fr, it, de, es
+    extract_strings(srcLang) 
 
     console.heading("Done!")

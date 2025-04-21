@@ -8,23 +8,13 @@ import shutil
 
 # Add the tools directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'tools'))
-import tools.unpack_font as unpkfnt
 import tools.put_glyphs as ptglyphs
 import tools.repack_wtp as rpckwtp
 import tools.repack_dat as rpckdat
 import tools.add_texture as addtex
+import tools.utils as utils
 
 console = MyConsole()
-
-def convert_texture(src_file: str, target_file: str):
-    astcenc_tool="./tools/astcenc-avx2.exe"
-    if platform.system() != "Windows":
-        raise NotImplementedError("Please run this script on Windows")
-    
-    if target_file.endswith(".dds"):
-        subprocess.run(["magick", "-define", "dds:mipmaps=0", "-define", "dds:compression=dxt5", src_file, target_file], check=True)
-    else:
-        subprocess.run([astcenc_tool, "-cl", src_file, target_file, "4x4", "-thorough"], check=True)
 
 def repack_dat(font_id: str):
     console.print(f"repacking dat...")
@@ -57,13 +47,13 @@ def build_font_with_new_texture(font_id: str):
     )
 
     console.print("converting textures...")
-    convert_texture(
+    utils.convert_texture(
         src_file=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.png", 
         target_file=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.dds"
     )
 
     console.print("repacking wtp...")
-    unpkfnt.ensure_dir(f"assembly/font/font_{font_id}_new.dtt/final/")
+    utils.ensure_dir(f"assembly/font/font_{font_id}_new.dtt/final/")
     rpckwtp.process(
         input_wta=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.wta", 
         input_wtp=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp", 
@@ -80,9 +70,9 @@ def build_font_with_new_texture(font_id: str):
 
 def build_font(font_id: str):
     console.heading(f"Building font {font_id}")
-    unpkfnt.ensure_dir(f"assembly/font/font_{font_id}.dat/")
-    unpkfnt.ensure_dir(f"assembly/font/font_{font_id}.dtt/")
-    unpkfnt.ensure_dir(f"output/font/")
+    utils.ensure_dir(f"assembly/font/font_{font_id}.dat/")
+    utils.ensure_dir(f"assembly/font/font_{font_id}.dtt/")
+    utils.ensure_dir(f"output/font/")
 
     # Check if ASTC files exist, otherwise use DDS
     astc_files = glob.glob(f"unpacked/font/font_{font_id}.dtt/*.astc")
@@ -112,7 +102,7 @@ def build_font(font_id: str):
         return
 
     console.print(f"converting textures...")
-    convert_texture(
+    utils.convert_texture(
         src_file=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{N}.png", 
         target_file=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{N}.{target_texture_ext}"
     )
@@ -136,7 +126,7 @@ def build_font(font_id: str):
 if __name__ == "__main__":
     console.heading("NieR Localization: Build Fonts")
     console.print("This script will build the font files.")
-    unpkfnt.ensure_dir(f"output/font/")
+    utils.ensure_dir(f"output/font/")
 
     build_font("00")
     build_font("01")

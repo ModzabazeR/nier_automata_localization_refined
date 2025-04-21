@@ -110,10 +110,26 @@ def generate_texture(glyphs, parsed_mcd):
     return texture
 
 
-def insert_strings_to_file(mcd, properties):
+def process(input_mcd: str, strings: str, fonts_json: str, output_mcd: str, output_texture: str):
+    parsed_mcd = None
+    with open(input_mcd, "rb") as in_file:
+        parsed_mcd = mcd.File.parse(in_file)
 
-    parsed_mcd.put_strings(mapping, lang, fonts)
+    mapping = None
+    with open(strings, "rb") as properties_file:
+        mapping = properties.parse_properties(properties_file)
 
+    fonts = build_fonts(fonts_json)
+
+    glyphs = get_glyphs(parsed_mcd, mapping, fonts)
+    parsed_mcd.remove_all_glyphs()
+    texture = generate_texture(glyphs, parsed_mcd)
+
+    parsed_mcd.put_strings(mapping, fonts)
+
+    with open(output_mcd, "wb") as out_file:
+        out_file.write(parsed_mcd.serialize())
+    texture.save(output_texture)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -125,22 +141,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    parsed_mcd = None
-    with open(args.input, "rb") as in_file:
-        parsed_mcd = mcd.File.parse(in_file)
-
-    mapping = None
-    with open(args.strings, "rb") as properties_file:
-        mapping = properties.parse_properties(properties_file)
-
-    fonts = build_fonts(args.fonts)
-
-    glyphs = get_glyphs(parsed_mcd, mapping, fonts)
-    parsed_mcd.remove_all_glyphs()
-    texture = generate_texture(glyphs, parsed_mcd)
-
-    parsed_mcd.put_strings(mapping, fonts)
-
-    with open(args.output, "wb") as out_file:
-        out_file.write(parsed_mcd.serialize())
-    texture.save(args.texture)
+    process(args.input, args.strings, args.fonts, args.output, args.texture)

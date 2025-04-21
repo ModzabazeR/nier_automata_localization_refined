@@ -5,6 +5,7 @@ import format.ftb as ftb
 import format.mcd as mcd
 from PIL import Image
 import os
+import utils
 
 def ensure_dir(output_dir):
     if os.path.isfile(output_dir):
@@ -44,7 +45,7 @@ def process(font_file_path: str, texture_paths: list, font_id: int, out_dir: str
     for texture_file in texture_paths:
         textures.append(Image.open(texture_file))
 
-    ensure_dir(out_dir)
+    utils.ensure_dir(out_dir)
 
     for char, glyph in parsed.get_glyphs(textures, font_id).items():
         if achar and achar != ord(char):
