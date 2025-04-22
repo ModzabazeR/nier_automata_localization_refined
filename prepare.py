@@ -143,6 +143,9 @@ def extract_strings_to_file(in_file: str, out_file: str):
 
     nonJapaneseFormats = {k: v for k, v in langFormats.items() if k != 'jp'}
     if not any(fmt in in_file for lang in nonJapaneseFormats.values() for fmt in lang.values()):
+        if in_file.endswith(".txt"):
+            shutil.copy(f"unpacked/{in_file}", f"jp/{out_file}")
+            return
         getstr.extract_strings_to_file(f"unpacked/{in_file}", f"jp/{out_file}", lang="jp", keep_non_ascii=True)
         return
 
@@ -793,13 +796,14 @@ def extract_strings(lang: str = "en"):
     # TODO: use csv instead of properties since we don't need OmegaT
     console.print("Copying files to target directory...")
     utils.ensure_dir(f"target/")
-    source_files = os.listdir(f"source/")
+    source_folder = "jp" if lang == "jp" else "source"
+    source_files = os.listdir(f"{source_folder}/")
     # *.properties => *_{targetLang}.properties
     for file in source_files:
         if file.endswith(".properties"):
-            shutil.copy(f"source/{file}", f"target/{file.replace('.properties', f'_{targetLang}.properties')}")
+            shutil.copy(f"{source_folder}/{file}", f"target/{file.replace('.properties', f'_{targetLang}.properties')}")
         elif file.endswith(".txt"):
-            shutil.copy(f"source/{file}", f"target/{file}")
+            shutil.copy(f"{source_folder}/{file}", f"target/{file}")
 
 if __name__ == "__main__":
     console.heading("NieR:Automata Localization: Initialize")
