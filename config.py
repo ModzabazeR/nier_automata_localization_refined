@@ -1414,7 +1414,6 @@ gameStrings = {
         ]
     }
 }
-
 class MyConsole(Console):
     HEADING_STYLE = "bold white on blue"
 

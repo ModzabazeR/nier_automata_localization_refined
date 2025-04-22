@@ -9,8 +9,6 @@ from PIL import Image
 import format.mcd as mcd
 import format.ktb as ktb
 import format.properties as properties
-from rich import print
-
 
 class Font:
     def __init__(self, id, font_json):
@@ -119,7 +117,6 @@ def process(input_mcd: str, strings: str, fonts_json: str, output_mcd: str, outp
     mapping = None
     with open(strings, "rb") as properties_file:
         mapping = properties.parse_properties(properties_file)
-    print(mapping)
 
     fonts = build_fonts(fonts_json)
 

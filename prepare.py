@@ -803,6 +803,11 @@ def extract_strings(lang: str = "en"):
 
 if __name__ == "__main__":
     console.heading("NieR:Automata Localization: Initialize")
+
+    if not utils.check_image_magick():
+        console.print("[red]ImageMagick is not installed. Please install it and try again.")
+        exit(1)
+
     unpack_dats()
     handle_astc()
 

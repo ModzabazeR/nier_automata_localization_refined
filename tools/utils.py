@@ -17,3 +17,7 @@ def convert_texture(src_file: str, target_file: str):
         subprocess.run(["magick", "-define", "dds:mipmaps=0", "-define", "dds:compression=dxt5", src_file, target_file], check=True)
     else:
         subprocess.run([astcenc_tool, "-cl", src_file, target_file, "4x4", "-thorough"], check=True)
+
+def check_image_magick():
+    result = subprocess.run(["magick", "-version"], capture_output=True, text=True)
+    return result.returncode == 0
