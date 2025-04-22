@@ -15,7 +15,7 @@ from io import TextIOWrapper
 def parse_properties(reader):
     result = dict()
     reader.seek(0)
-    text_reader = TextIOWrapper(reader)
+    text_reader = TextIOWrapper(reader, encoding="utf-8")
     for line in text_reader.readlines():
         key, sep, value = (
             line.rstrip("\r\n").encode("latin1", "backslashreplace").decode("unicode_escape").partition("=")

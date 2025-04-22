@@ -1,4 +1,4 @@
-from config import MyConsole, langFormats, gameStrings, targetLang
+from config import MyConsole, langFormats, gameStrings, srcLang, targetLang
 import glob
 import shutil
 import sys
@@ -80,6 +80,10 @@ if __name__ == "__main__":
     #       ...,
     # })
     for dat_file, data in gameStrings.items():
+        files_to_build = [f"ui/ui_title{langFormats[srcLang]["default"]}.dat", f"subtitle/subtitle0010{langFormats[srcLang]["default"]}.dat"]
+        if dat_file not in files_to_build:
+            continue
+
         extensions = data.keys()
 
         # (ext, [file1, file2,...])

@@ -149,7 +149,7 @@ def extract_strings_to_file(in_file: str, out_file: str):
     if in_file.endswith(".txt"):
         shutil.copy(f"unpacked/{in_file}", f"source/{out_file}")
     else:
-        getstr.extract_strings_to_file(f"unpacked/{in_file}", f"source/{out_file}")
+        getstr.extract_strings_to_file(f"unpacked/{in_file}", f"source/{out_file}", keep_non_ascii=True)
 
 def extract_strings(lang: str = "en"):
     console.print("Extracting strings - it will take several minutes")
