@@ -808,6 +808,12 @@ if __name__ == "__main__":
         console.print("[red]ImageMagick is not installed. Please install it and try again.")
         exit(1)
 
+    # if there is already a folder named "target", warn the user
+    if os.path.exists("target"):
+        console.print("[yellow]Warning: target folder already exists. This may overwrite your existing localization files.")
+        console.print("[yellow]Press [bold]Enter[/bold] to continue, or [bold]Ctrl+C[/bold] to cancel.")
+        input()
+
     unpack_dats()
     handle_astc()
 
