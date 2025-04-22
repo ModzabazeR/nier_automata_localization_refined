@@ -80,9 +80,9 @@ if __name__ == "__main__":
     #       ...,
     # })
     for dat_file, data in gameStrings.items():
-        files_to_build = [f"ui/ui_title{langFormats[srcLang]["default"]}.dat", f"subtitle/subtitle0010{langFormats[srcLang]["default"]}.dat"]
-        if dat_file not in files_to_build:
-            continue
+        # files_to_build = [f"ui/ui_title{langFormats[srcLang]["default"]}.dat", f"subtitle/subtitle0010{langFormats[srcLang]["default"]}.dat"]
+        # if dat_file not in files_to_build:
+        #     continue
 
         extensions = data.keys()
 
