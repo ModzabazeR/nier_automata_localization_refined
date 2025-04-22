@@ -86,9 +86,9 @@ flowchart TD
     J --> K[Copy Files to Game Directory]
     K --> L[End]
     
-    style F fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#f9f,stroke:#333,stroke-width:2px
-    style J fill:#f9f,stroke:#333,stroke-width:2px
+    style F fill:#e6f3ff,stroke:#0066cc,stroke-width:2px,color:#0066cc
+    style H fill:#e6f3ff,stroke:#0066cc,stroke-width:2px,color:#0066cc
+    style J fill:#e6f3ff,stroke:#0066cc,stroke-width:2px,color:#0066cc
 ```
 
 ### prepare.py Workflow
