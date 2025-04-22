@@ -68,6 +68,68 @@ Resources used during development:
 * WTA format: https://github.com/Kerilk/bayonetta_tools/blob/master/binary_templates/Nier%20Automata%20wta.bt
 * mruby bytecode: https://github.com/mrubyc/mrubyc/ and https://github.com/mruby/mruby/
 
+## Project Workflow Visualization
+
+### Overall Process Flow
+
+```mermaid
+flowchart TD
+    A[Start] --> B[1. Clone Repository]
+    B --> C[2. Install Dependencies]
+    C --> D[3. Edit config.py]
+    D --> E[4. Unpack CRI Packages to data/]
+    E --> F[5. Run prepare.py]
+    F --> G[6. Add Missing Characters to fonts/]
+    G --> H[7. Run build_fonts.py]
+    H --> I[8. Translate Text in target/]
+    I --> J[9. Run build_localization.py]
+    J --> K[10. Copy Files to Game Directory]
+    K --> L[End]
+    
+    style F fill:#f9f,stroke:#333,stroke-width:2px
+    style H fill:#f9f,stroke:#333,stroke-width:2px
+    style J fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+### prepare.py Workflow
+
+```mermaid
+flowchart TD
+    A[Start prepare.py] --> B[Read data/ directory]
+    B --> C[Extract .dat and .dtt files]
+    C --> D[Unpack to unpacked/ directory]
+    D --> E[Extract .bin, .mcd, .smd files]
+    E --> F[Extract .dds textures]
+    F --> G[Generate source/ directory]
+    G --> H[Create .properties and .txt files]
+    H --> I[End]
+```
+
+### build_fonts.py Workflow
+
+```mermaid
+flowchart TD
+    A[Start build_fonts.py] --> B[Read fonts/ directory]
+    B --> C[Process character glyphs]
+    C --> D[Read character codepoints]
+    D --> E[Add missing characters from config]
+    E --> F[Generate font files]
+    F --> G[End]
+```
+
+### build_localization.py Workflow
+
+```mermaid
+flowchart TD
+    A[Start build_localization.py] --> B[Read target/ directory]
+    B --> C[Process translated .properties and .txt files]
+    C --> D[Generate assembly/ files]
+    D --> E[Create .bin, .mcd, .smd files]
+    E --> F[Pack files into .dat and .dtt format]
+    F --> G[Generate output/ directory]
+    G --> H[End]
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
