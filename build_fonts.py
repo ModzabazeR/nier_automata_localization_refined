@@ -64,6 +64,12 @@ def build_font_with_new_texture(font_id: str):
         ]
     )
 
+    shutil.copy(f"assembly/font/font_{font_id}_new.dat/font_{font_id}.ftb", f"assembly/font/font_{font_id}.dat/font_{font_id}.ftb")
+    shutil.copy(f"assembly/font/font_{font_id}_new.dat/font_{font_id}.wta", f"assembly/font/font_{font_id}.dat/font_{font_id}.wta")
+    if font_id != "00":
+        shutil.copy(f"unpacked/font/font_{font_id}.dat/font_{font_id}.ktb", f"assembly/font/font_{font_id}.dat/font_{font_id}.ktb")
+    shutil.copy(f"assembly/font/font_{font_id}_new.dtt/final/font_{font_id}.wtp", f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp")
+
     console.print("repacking dat...")
     rpckdat.process(f"data/font/font_{font_id}.dat", f"output/font/font_{font_id}.dat", glob.glob(f"assembly/font/font_{font_id}_new.dat/*"))
     rpckdat.process(f"data/font/font_{font_id}.dtt", f"output/font/font_{font_id}.dtt", glob.glob(f"assembly/font/font_{font_id}_new.dtt/final/*.wtp"))
@@ -108,7 +114,8 @@ def build_font(font_id: str):
     )
 
     # we'll skip the original script's clone kernings part
-    shutil.copy(f"unpacked/font/font_{font_id}.dat/font_{font_id}.ktb", f"assembly/font/font_{font_id}.dat/font_{font_id}.ktb")
+    if font_id != "00":
+        shutil.copy(f"unpacked/font/font_{font_id}.dat/font_{font_id}.ktb", f"assembly/font/font_{font_id}.dat/font_{font_id}.ktb")
 
     console.print(f"repacking wtp...")
     rpckwtp.process(

@@ -16,7 +16,7 @@ chars_to_add: List[int] = [
 ]
 
 # can be changed to jp, en, fr, it, de, es
-srcLang = "jp"
+srcLang = "en"
 # your language
 targetLang = "th"
 
