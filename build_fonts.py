@@ -29,17 +29,17 @@ def build_font_with_new_texture(font_id: str):
         input_ftb=f"unpacked/font/font_{font_id}.dat/font_{font_id}.ftb",
         input_wta=f"unpacked/font/font_{font_id}.dat/font_{font_id}.wta",
         input_wtp=f"unpacked/font/font_{font_id}.dtt/font_{font_id}.wtp",
-        output_ftb=f"assembly/font/font_{font_id}.dat/font_{font_id}.ftb",
-        output_wta=f"assembly/font/font_{font_id}.dat/font_{font_id}.wta",
-        output_wtp=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp",
+        output_ftb=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.ftb",
+        output_wta=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.wta",
+        output_wtp=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp",
     )
 
     console.print(f"putting glyphs to page {page}...")
     ptglyphs.process(
-        input_ftb=f"assembly/font/font_{font_id}.dat/font_{font_id}.ftb",
-        input_texture=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{page}.dds",
-        output_ftb=f"assembly/font/font_{font_id}.dat/font_{font_id}.ftb",
-        output_texture=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{page}.png",
+        input_ftb=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.ftb",
+        input_texture=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.dds",
+        output_ftb=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.ftb",
+        output_texture=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.png",
         page=page,
         char=[
             (code, f"fonts/{font_id}/{code:04x}.png") for code in chars_to_add
@@ -48,25 +48,25 @@ def build_font_with_new_texture(font_id: str):
 
     console.print("converting textures...")
     utils.convert_texture(
-        src_file=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{page}.png", 
-        target_file=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{page}.dds"
+        src_file=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.png", 
+        target_file=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.dds"
     )
 
     console.print("repacking wtp...")
-    utils.ensure_dir(f"assembly/font/font_{font_id}.dtt/")
+    utils.ensure_dir(f"assembly/font/font_{font_id}_new.dtt/final/")
     rpckwtp.process(
-        input_wta=f"assembly/font/font_{font_id}.dat/font_{font_id}.wta", 
-        input_wtp=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp", 
-        output_wta=f"assembly/font/font_{font_id}.dat/font_{font_id}.wta", 
-        output_wtp=f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp", 
+        input_wta=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.wta", 
+        input_wtp=f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp", 
+        output_wta=f"assembly/font/font_{font_id}_new.dat/font_{font_id}.wta", 
+        output_wtp=f"assembly/font/font_{font_id}_new.dtt/final/font_{font_id}.wtp", 
         texture=[
-            (page, f"assembly/font/font_{font_id}.dtt/font_{font_id}.wtp_00{page}.dds"),
+            (page, f"assembly/font/font_{font_id}_new.dtt/font_{font_id}.wtp_00{page}.dds"),
         ]
     )
 
     console.print("repacking dat...")
-    rpckdat.process(f"data/font/font_{font_id}.dat", f"output/font/font_{font_id}.dat", glob.glob(f"assembly/font/font_{font_id}.dat/*"))
-    rpckdat.process(f"data/font/font_{font_id}.dtt", f"output/font/font_{font_id}.dtt", glob.glob(f"assembly/font/font_{font_id}.dtt/*.wtp"))
+    rpckdat.process(f"data/font/font_{font_id}.dat", f"output/font/font_{font_id}.dat", glob.glob(f"assembly/font/font_{font_id}_new.dat/*"))
+    rpckdat.process(f"data/font/font_{font_id}.dtt", f"output/font/font_{font_id}.dtt", glob.glob(f"assembly/font/font_{font_id}_new.dtt/final/*.wtp"))
 
 def build_font(font_id: str):
     console.heading(f"Building font {font_id}")
